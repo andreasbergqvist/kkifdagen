@@ -372,9 +372,7 @@ function SchedulePage() {
                           {match.team1}
                         </Link>
                       ) : (
-                        <span aria-label="Lag 1: saknas" className="block text-sky-900/45">
-                          -
-                        </span>
+                        <span className="block text-sky-900/45">-</span>
                       )}
                       {isNamedTeam(match.team2) ? (
                         <Link
@@ -385,9 +383,7 @@ function SchedulePage() {
                           {match.team2}
                         </Link>
                       ) : (
-                        <span aria-label="Lag 2: saknas" className="block text-sky-900/45">
-                          -
-                        </span>
+                        <span className="block text-sky-900/45">-</span>
                       )}
                     </div>
                   </td>
