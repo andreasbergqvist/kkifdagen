@@ -30,6 +30,10 @@ function formatGroupPath(year, group) {
   return `/spelschema/${year}/grupp/${encodeURIComponent(group)}`;
 }
 
+function formatPlanPath(year, plan) {
+  return `/spelschema/${year}/plan/${encodeURIComponent(plan)}`;
+}
+
 function Header() {
   return (
     <header className="border-b border-white/70 bg-white/70 backdrop-blur">
@@ -215,6 +219,15 @@ function SchedulePage() {
     setTeamFilter('');
   }, [params.teamId]);
 
+  useEffect(() => {
+    if (params.planId) {
+      setPlanFilter(decodeURIComponent(params.planId));
+      return;
+    }
+
+    setPlanFilter('');
+  }, [params.planId]);
+
   const groups = useMemo(() => {
     if (!matches) return [];
     return [...new Set(matches.map((match) => match.group))].sort((a, b) =>
@@ -289,44 +302,41 @@ function SchedulePage() {
             title="Grupp"
             items={groups}
             selected={groupFilter}
-            onChange={setGroupFilter}
+            formatPath={(item) => formatGroupPath(year, item)}
+            year={year}
           />
           <FilterRow
             title="Plan"
             items={plans}
             selected={planFilter}
-            onChange={setPlanFilter}
+            formatPath={(item) => formatPlanPath(year, item)}
             prefix="Plan "
+            year={year}
           />
           <FilterRow
             title="Lag"
             items={teams}
             selected={teamFilter}
-            onChange={setTeamFilter}
+            formatPath={(item) => formatTeamPath(year, item)}
+            year={year}
           />
-          <button
-            type="button"
-            onClick={() => {
-              setGroupFilter('');
-              setPlanFilter('');
-              setTeamFilter('');
-            }}
-            className="rounded-full border border-sky-900/20 bg-white px-4 py-2 text-sm font-semibold text-sky-900 transition hover:bg-amber-100"
+          <Link
+            to={`/spelschema/${year}`}
+            className="inline-block rounded-full border border-sky-900/20 bg-white px-4 py-2 text-sm font-semibold text-sky-900 transition hover:bg-amber-100"
           >
             Rensa filter
-          </button>
+          </Link>
         </div>
 
         <div className="overflow-auto rounded-2xl border border-sky-900/10">
           <table className="min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-sky-900 text-xs uppercase tracking-[0.08em] text-sky-50">
               <tr>
-                <th className="px-2 py-3 sm:px-4">#</th>
                 <th className="px-2 py-3 sm:px-4">Tid</th>
+                <th className="px-2 py-3 sm:px-4">Lag</th>
                 <th className="px-2 py-3 sm:px-4">Plan</th>
                 <th className="px-2 py-3 sm:px-4">Grupp</th>
                 <th className="px-2 py-3 sm:px-4">Typ</th>
-                <th className="px-2 py-3 sm:px-4">Lag</th>
               </tr>
             </thead>
             <tbody>
@@ -335,31 +345,8 @@ function SchedulePage() {
                   key={match.nr}
                   className="border-b border-sky-900/10 bg-white odd:bg-sky-50/40"
                 >
-                  <td className="px-2 py-2 text-sky-900/75 sm:px-4 sm:py-3">
-                    {match.nr}
-                  </td>
                   <td className="px-2 py-2 font-bold text-sky-950 sm:px-4 sm:py-3">
                     {match.time}
-                  </td>
-                  <td className="px-2 py-2 sm:px-4 sm:py-3">
-                    <button
-                      type="button"
-                      onClick={() => setPlanFilter(String(match.planNr))}
-                      className="rounded-full border border-sky-900/15 bg-sky-100 px-2 py-1 font-semibold text-sky-900 sm:px-3"
-                    >
-                      Plan {match.planNr}
-                    </button>
-                  </td>
-                  <td className="px-2 py-2 sm:px-4 sm:py-3">
-                    <Link
-                      to={formatGroupPath(year, match.group)}
-                      className="rounded-full border border-sky-900/20 bg-white px-2 py-1 font-bold text-sky-900 hover:bg-amber-100 sm:px-3"
-                    >
-                      {match.group}
-                    </Link>
-                  </td>
-                  <td className="px-2 py-2 text-sky-900/80 sm:px-4 sm:py-3">
-                    {match.type}
                   </td>
                   <td className="px-2 py-2 sm:px-4 sm:py-3">
                     <div className="space-y-1">
@@ -367,9 +354,9 @@ function SchedulePage() {
                         <Link
                           to={formatTeamPath(year, match.team1)}
                           aria-label={`Lag 1: ${match.team1}`}
-                          className="block font-semibold text-sky-900 hover:text-sky-700"
+                          className="block font-semibold text-sky-900 hover:text-sky-700 truncate"
                         >
-                          {match.team1}
+                          {match.team1} <span className="font-normal">vs</span>
                         </Link>
                       ) : (
                         <span className="block text-sky-900/45">-</span>
@@ -387,6 +374,25 @@ function SchedulePage() {
                       )}
                     </div>
                   </td>
+                  <td className="px-2 py-2 sm:px-4 sm:py-3">
+                    <Link
+                      to={formatPlanPath(year, String(match.planNr))}
+                      className="inline-block rounded-full border border-sky-900/15 bg-sky-100 px-2 py-1 font-semibold text-sky-900 hover:bg-amber-100 sm:px-3"
+                    >
+                      {match.planNr}
+                    </Link>
+                  </td>
+                  <td className="px-2 py-2 sm:px-4 sm:py-3">
+                    <Link
+                      to={formatGroupPath(year, match.group)}
+                      className="rounded-full border border-sky-900/20 bg-white px-2 py-1 font-bold text-sky-900 hover:bg-amber-100 sm:px-3"
+                    >
+                      {match.group === 'Slutspel' ? '🏆' : match.group}
+                    </Link>
+                  </td>
+                  <td className="px-2 py-2 text-sky-900/80 sm:px-4 sm:py-3">
+                    {match.type}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -397,7 +403,7 @@ function SchedulePage() {
   );
 }
 
-function FilterRow({ title, items, selected, onChange, prefix = '' }) {
+function FilterRow({ title, items, selected, formatPath, prefix = '' }) {
   return (
     <div>
       <h3 className="mb-2 text-xs font-extrabold uppercase tracking-[0.18em] text-sky-900/70">
@@ -408,10 +414,9 @@ function FilterRow({ title, items, selected, onChange, prefix = '' }) {
           const active = item === selected;
 
           return (
-            <button
+            <Link
               key={item}
-              type="button"
-              onClick={() => onChange(active ? '' : item)}
+              to={formatPath(item)}
               className={`rounded-full border px-3 py-1 text-sm font-semibold transition ${
                 active
                   ? 'border-sky-900 bg-sky-900 text-white'
@@ -420,7 +425,7 @@ function FilterRow({ title, items, selected, onChange, prefix = '' }) {
             >
               {prefix}
               {item}
-            </button>
+            </Link>
           );
         })}
       </div>
@@ -448,6 +453,10 @@ export default function App() {
         />
         <Route
           path="/spelschema/:year/lag/:teamId"
+          element={<SchedulePage />}
+        />
+        <Route
+          path="/spelschema/:year/plan/:planId"
           element={<SchedulePage />}
         />
       </Routes>
