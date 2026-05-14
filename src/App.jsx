@@ -33,17 +33,17 @@ function formatGroupPath(year, group) {
 function Header() {
   return (
     <header className="border-b border-white/70 bg-white/70 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-2 py-3 sm:gap-4 sm:px-6 sm:py-4 lg:px-8">
         <Link to="/" className="flex items-center gap-3">
-          <img src={LOGO_SRC} alt="KKIF" className="h-12 w-auto" />
+          <img src={LOGO_SRC} alt="KKIF" className="h-10 w-auto sm:h-12" />
           <div>
-            <h1 className="font-display text-2xl font-black tracking-tight text-sky-950">
-              KKIF-Dagen
+            <h1 className="font-display text-xl font-black tracking-tight text-sky-950 sm:text-2xl">
+              KKIF<span className="hidden sm:inline">-Dagen</span>
             </h1>
           </div>
         </Link>
 
-        <nav className="flex items-center gap-1 rounded-full border border-sky-950/10 bg-white p-1 text-sm font-semibold">
+        <nav className="flex items-center gap-1 rounded-full border border-sky-950/10 bg-white p-1 text-xs font-semibold sm:text-sm">
           <NavItem to="/">Start</NavItem>
           <NavItem to="/spelschema">Spelschema</NavItem>
           <NavItem to="/regler">Regler</NavItem>
@@ -59,7 +59,7 @@ function NavItem({ to, children }) {
       to={to}
       end={to === '/'}
       className={({ isActive }) =>
-        `rounded-full px-4 py-2 transition ${
+        `rounded-full px-3 py-2 transition sm:px-4 ${
           isActive
             ? 'bg-sky-900 text-white'
             : 'text-sky-900 hover:bg-amber-200/70 hover:text-sky-950'
@@ -73,7 +73,7 @@ function NavItem({ to, children }) {
 
 function PageShell({ children }) {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <main className="mx-auto px-2 py-4 sm:max-w-6xl sm:px-6 sm:py-8 lg:px-8">
       {children}
     </main>
   );
@@ -82,7 +82,7 @@ function PageShell({ children }) {
 function StartPage() {
   return (
     <PageShell>
-      <section className="overflow-hidden rounded-3xl border border-sky-950/10 bg-gradient-to-br from-white via-sky-50 to-amber-50 p-8 shadow-[0_20px_45px_rgba(11,63,119,0.12)]">
+      <section className="overflow-hidden rounded-3xl border border-sky-950/10 bg-gradient-to-br from-white via-sky-50 to-amber-50 p-5 shadow-[0_20px_45px_rgba(11,63,119,0.12)] sm:p-8">
         <p className="mb-4 inline-flex rounded-full border border-sky-900/15 bg-white px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-sky-900">
           Välkommen
         </p>
@@ -147,7 +147,7 @@ function InfoCard({ title, children }) {
 function RulesPage() {
   return (
     <PageShell>
-      <section className="rounded-3xl border border-sky-950/10 bg-white p-8 shadow-[0_20px_45px_rgba(11,63,119,0.08)]">
+      <section className="rounded-3xl border border-sky-950/10 bg-white p-5 shadow-[0_20px_45px_rgba(11,63,119,0.08)] sm:p-8">
         <h2 className="font-display text-3xl font-black text-sky-950">
           Regler
         </h2>
@@ -272,7 +272,7 @@ function SchedulePage() {
 
   return (
     <PageShell>
-      <section className="space-y-4 rounded-3xl border border-sky-950/10 bg-white p-6 shadow-[0_20px_45px_rgba(11,63,119,0.08)]">
+      <section className="space-y-4 rounded-3xl border border-sky-950/10 bg-white p-4 shadow-[0_20px_45px_rgba(11,63,119,0.08)] sm:p-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="font-display text-3xl font-black text-sky-950">
@@ -284,7 +284,7 @@ function SchedulePage() {
           </div>
         </div>
 
-        <div className="space-y-3 rounded-2xl border border-sky-900/10 bg-sky-50/60 p-4">
+        <div className="space-y-3 rounded-2xl border border-sky-900/10 bg-sky-50/60 p-3 sm:p-4">
           <FilterRow
             title="Grupp"
             items={groups}
@@ -318,16 +318,15 @@ function SchedulePage() {
         </div>
 
         <div className="overflow-auto rounded-2xl border border-sky-900/10">
-          <table className="min-w-full text-left">
+          <table className="min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-sky-900 text-xs uppercase tracking-[0.08em] text-sky-50">
               <tr>
-                <th className="px-4 py-3">#</th>
-                <th className="px-4 py-3">Tid</th>
-                <th className="px-4 py-3">Plan</th>
-                <th className="px-4 py-3">Grupp</th>
-                <th className="px-4 py-3">Typ</th>
-                <th className="px-4 py-3">Lag 1</th>
-                <th className="px-4 py-3">Lag 2</th>
+                <th className="px-2 py-3 sm:px-4">#</th>
+                <th className="px-2 py-3 sm:px-4">Tid</th>
+                <th className="px-2 py-3 sm:px-4">Plan</th>
+                <th className="px-2 py-3 sm:px-4">Grupp</th>
+                <th className="px-2 py-3 sm:px-4">Typ</th>
+                <th className="px-2 py-3 sm:px-4">Lag</th>
               </tr>
             </thead>
             <tbody>
@@ -336,55 +335,57 @@ function SchedulePage() {
                   key={match.nr}
                   className="border-b border-sky-900/10 bg-white odd:bg-sky-50/40"
                 >
-                  <td className="px-4 py-3 text-sm text-sky-900/75">
+                  <td className="px-2 py-2 text-sky-900/75 sm:px-4 sm:py-3">
                     {match.nr}
                   </td>
-                  <td className="px-4 py-3 font-bold text-sky-950">
+                  <td className="px-2 py-2 font-bold text-sky-950 sm:px-4 sm:py-3">
                     {match.time}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-2 py-2 sm:px-4 sm:py-3">
                     <button
                       type="button"
                       onClick={() => setPlanFilter(String(match.planNr))}
-                      className="rounded-full border border-sky-900/15 bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-900"
+                      className="rounded-full border border-sky-900/15 bg-sky-100 px-2 py-1 font-semibold text-sky-900 sm:px-3"
                     >
                       Plan {match.planNr}
                     </button>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-2 py-2 sm:px-4 sm:py-3">
                     <Link
                       to={formatGroupPath(year, match.group)}
-                      className="rounded-full border border-sky-900/20 bg-white px-3 py-1 text-sm font-bold text-sky-900 hover:bg-amber-100"
+                      className="rounded-full border border-sky-900/20 bg-white px-2 py-1 font-bold text-sky-900 hover:bg-amber-100 sm:px-3"
                     >
                       {match.group}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-sm text-sky-900/80">
+                  <td className="px-2 py-2 text-sky-900/80 sm:px-4 sm:py-3">
                     {match.type}
                   </td>
-                  <td className="px-4 py-3">
-                    {isNamedTeam(match.team1) ? (
-                      <Link
-                        to={formatTeamPath(year, match.team1)}
-                        className="text-sm font-semibold text-sky-900 hover:text-sky-700"
-                      >
-                        {match.team1}
-                      </Link>
-                    ) : (
-                      <span className="text-sm text-sky-900/45">-</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {isNamedTeam(match.team2) ? (
-                      <Link
-                        to={formatTeamPath(year, match.team2)}
-                        className="text-sm font-semibold text-sky-900 hover:text-sky-700"
-                      >
-                        {match.team2}
-                      </Link>
-                    ) : (
-                      <span className="text-sm text-sky-900/45">-</span>
-                    )}
+                  <td className="px-2 py-2 sm:px-4 sm:py-3">
+                    <div className="space-y-1">
+                      {isNamedTeam(match.team1) ? (
+                        <Link
+                          to={formatTeamPath(year, match.team1)}
+                          aria-label={`Lag 1: ${match.team1}`}
+                          className="block font-semibold text-sky-900 hover:text-sky-700"
+                        >
+                          {match.team1}
+                        </Link>
+                      ) : (
+                        <span className="block text-sky-900/45">-</span>
+                      )}
+                      {isNamedTeam(match.team2) ? (
+                        <Link
+                          to={formatTeamPath(year, match.team2)}
+                          aria-label={`Lag 2: ${match.team2}`}
+                          className="block font-semibold text-sky-900 hover:text-sky-700"
+                        >
+                          {match.team2}
+                        </Link>
+                      ) : (
+                        <span className="block text-sky-900/45">-</span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
