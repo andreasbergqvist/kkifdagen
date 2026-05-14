@@ -1,0 +1,333 @@
+import { Link, Navigate, Route, Routes, useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { AVAILABLE_YEARS, SCHEDULES } from "./data/schedules";
+
+const DEFAULT_YEAR = 2026;
+
+function formatTeamPath(year, team) {
+  return `/spelschema/${year}/lag/${encodeURIComponent(team)}`;
+}
+
+function formatGroupPath(year, group) {
+  return `/spelschema/${year}/grupp/${encodeURIComponent(group)}`;
+}
+
+function Header() {
+  return (
+    <header className="border-b border-white/70 bg-white/70 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <Link to="/" className="flex items-center gap-3">
+          <img src="/karrakif-logo.png" alt="KKIF" className="h-12 w-auto" />
+          <div>
+            <h1 className="font-display text-2xl font-black tracking-tight text-sky-950">KKIF-Dagen</h1>
+          </div>
+        </Link>
+
+        <nav className="flex items-center gap-1 rounded-full border border-sky-950/10 bg-white p-1 text-sm font-semibold">
+          <NavItem to="/">Start</NavItem>
+          <NavItem to="/spelschema">Spelschema</NavItem>
+          <NavItem to="/regler">Regler</NavItem>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+function NavItem({ to, children }) {
+  return (
+    <Link
+      to={to}
+      className="rounded-full px-4 py-2 text-sky-900 transition hover:bg-amber-200/70 hover:text-sky-950"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function PageShell({ children }) {
+  return <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">{children}</main>;
+}
+
+function StartPage() {
+  return (
+    <PageShell>
+      <section className="overflow-hidden rounded-3xl border border-sky-950/10 bg-gradient-to-br from-white via-sky-50 to-amber-50 p-8 shadow-[0_20px_45px_rgba(11,63,119,0.12)]">
+        <p className="mb-4 inline-flex rounded-full border border-sky-900/15 bg-white px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-sky-900">
+          Välkommen
+        </p>
+        <h2 className="font-display text-4xl font-black leading-tight text-sky-950 sm:text-5xl">
+          KKIF-dagen 2026
+        </h2>
+        <p className="mt-4 max-w-2xl text-lg text-sky-950/75">
+          En heldag med interncup, glädje och mycket fotboll. Här hittar du all information om
+          upplägg, regler och spelschema.
+        </p>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <InfoCard title="Datum">
+            Lördag 2026-06-06
+          </InfoCard>
+          <InfoCard title="Plats">
+            Klarebergsvallen
+          </InfoCard>
+          <InfoCard title="Starttider">
+            09.30 uppvisningsmatch, 10.00 turneringsstart
+          </InfoCard>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-sky-900/10 bg-white/90 p-5">
+          <h3 className="text-xs font-extrabold uppercase tracking-[0.18em] text-sky-900/70">Dagens innehåll</h3>
+          <ul className="mt-3 space-y-2 text-sky-950/85">
+            <li>9.30 Uppvisningsmatch med våra yngsta spelare</li>
+            <li>10.00 Turneringen startar</li>
+            <li>Café och grillförsäljning</li>
+            <li>Försäljningstält med Klubbhuset</li>
+            <li>Bytesbord med klubbkläder och fotbollsskor</li>
+            <li>Skjuta-hårt-tävling</li>
+            <li>Tipspromenad</li>
+          </ul>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-sky-900/10 bg-white/90 p-5">
+          <h3 className="text-xs font-extrabold uppercase tracking-[0.18em] text-sky-900/70">Planer</h3>
+          <ul className="mt-3 space-y-2 text-sky-950/85">
+            <li>Plan 1 - Naturgräs (7 mot 7 mål)</li>
+            <li>Plan 2 - Naturgräs (7 mot 7 mål)</li>
+            <li>Plan 3 - Konstgräs (7 mot 7 mål)</li>
+            <li>Plan 4 - Konstgräs (7 mot 7 mål)</li>
+            <li>Plan 5 - Konstgräs (9 mot 9 mål)</li>
+            <li>Plan 6 - Konstgräs 7 mot 7 planen (7 mot 7 mål)</li>
+          </ul>
+        </div>
+      </section>
+    </PageShell>
+  );
+}
+
+function InfoCard({ title, children }) {
+  return (
+    <article className="rounded-2xl border border-sky-900/10 bg-white/90 p-4">
+      <h3 className="text-xs font-extrabold uppercase tracking-[0.18em] text-sky-900/70">{title}</h3>
+      <p className="mt-2 text-lg font-bold text-sky-950">{children}</p>
+    </article>
+  );
+}
+
+function RulesPage() {
+  return (
+    <PageShell>
+      <section className="rounded-3xl border border-sky-950/10 bg-white p-8 shadow-[0_20px_45px_rgba(11,63,119,0.08)]">
+        <h2 className="font-display text-3xl font-black text-sky-950">Regler</h2>
+
+        <ol className="mt-6 space-y-3 text-sky-950/85">
+          <li>1. Matchtid enligt spelschemat. Alla matcher startar på utsatt tid.</li>
+          <li>2. Gruppspel avgörs enligt poäng: vinst 3, oavgjort 1, förlust 0.</li>
+          <li>3. Vid lika poäng gäller målskillnad, därefter flest gjorda mål, sedan lottning.</li>
+          <li>4. Slutspelsmatcher avgörs direkt. Vid oavgjort tillämpas straffar.</li>
+          <li>5. Schysst spel, respekt för domare och motståndare gäller hela dagen.</li>
+        </ol>
+      </section>
+    </PageShell>
+  );
+}
+
+function SchedulePage() {
+  const params = useParams();
+  const year = Number(params.year || DEFAULT_YEAR);
+  const matches = SCHEDULES[year] || null;
+
+  const [groupFilter, setGroupFilter] = useState("");
+  const [teamFilter, setTeamFilter] = useState("");
+  const [planFilter, setPlanFilter] = useState("");
+
+  useEffect(() => {
+    if (params.groupId) {
+      setGroupFilter(decodeURIComponent(params.groupId));
+      return;
+    }
+
+    setGroupFilter("");
+  }, [params.groupId]);
+
+  useEffect(() => {
+    if (params.teamId) {
+      setTeamFilter(decodeURIComponent(params.teamId));
+      return;
+    }
+
+    setTeamFilter("");
+  }, [params.teamId]);
+
+  const groups = useMemo(() => {
+    if (!matches) return [];
+    return [...new Set(matches.map((match) => match.group))].sort((a, b) =>
+      a.localeCompare(b, "sv"),
+    );
+  }, [matches]);
+
+  const plans = useMemo(() => {
+    if (!matches) return [];
+    return [...new Set(matches.map((match) => String(match.planNr)))].sort((a, b) => Number(a) - Number(b));
+  }, [matches]);
+
+  const teams = useMemo(() => {
+    if (!matches) return [];
+    return [...new Set(matches.flatMap((match) => [match.team1, match.team2]))]
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b, "sv"));
+  }, [matches]);
+
+  const filteredMatches = useMemo(() => {
+    if (!matches) return [];
+
+    return matches.filter((match) => {
+      const groupOk = !groupFilter || match.group === groupFilter;
+      const teamOk = !teamFilter || match.team1 === teamFilter || match.team2 === teamFilter;
+      const planOk = !planFilter || String(match.planNr) === planFilter;
+      return groupOk && teamOk && planOk;
+    });
+  }, [groupFilter, matches, planFilter, teamFilter]);
+
+  if (!matches) {
+    return (
+      <PageShell>
+        <section className="rounded-3xl border border-sky-950/10 bg-white p-8 text-center">
+          <h2 className="font-display text-3xl font-black text-sky-950">Spelschema {year}</h2>
+          <p className="mt-3 text-sky-900/75">Spelschemat kommer snart.</p>
+        </section>
+      </PageShell>
+    );
+  }
+
+  return (
+    <PageShell>
+      <section className="space-y-4 rounded-3xl border border-sky-950/10 bg-white p-6 shadow-[0_20px_45px_rgba(11,63,119,0.08)]">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="font-display text-3xl font-black text-sky-950">Spelschema {year}</h2>
+          </div>
+          <div className="rounded-full border border-sky-900/15 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-900">
+            {filteredMatches.length} / {matches.length} matcher
+          </div>
+        </div>
+
+        <div className="space-y-3 rounded-2xl border border-sky-900/10 bg-sky-50/60 p-4">
+          <FilterRow title="Grupp" items={groups} selected={groupFilter} onChange={setGroupFilter} />
+          <FilterRow title="Plan" items={plans} selected={planFilter} onChange={setPlanFilter} prefix="Plan " />
+          <FilterRow title="Lag" items={teams} selected={teamFilter} onChange={setTeamFilter} />
+          <button
+            type="button"
+            onClick={() => {
+              setGroupFilter("");
+              setPlanFilter("");
+              setTeamFilter("");
+            }}
+            className="rounded-full border border-sky-900/20 bg-white px-4 py-2 text-sm font-semibold text-sky-900 transition hover:bg-amber-100"
+          >
+            Rensa filter
+          </button>
+        </div>
+
+        <div className="overflow-auto rounded-2xl border border-sky-900/10">
+          <table className="min-w-full text-left">
+            <thead className="bg-sky-900 text-xs uppercase tracking-[0.08em] text-sky-50">
+              <tr>
+                <th className="px-4 py-3">#</th>
+                <th className="px-4 py-3">Tid</th>
+                <th className="px-4 py-3">Plan</th>
+                <th className="px-4 py-3">Grupp</th>
+                <th className="px-4 py-3">Typ</th>
+                <th className="px-4 py-3">Lag 1</th>
+                <th className="px-4 py-3">Lag 2</th>
+                <th className="px-4 py-3">Resultat</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredMatches.map((match) => (
+                <tr key={match.nr} className="border-b border-sky-900/10 bg-white odd:bg-sky-50/40">
+                  <td className="px-4 py-3 text-sm text-sky-900/75">{match.nr}</td>
+                  <td className="px-4 py-3 font-bold text-sky-950">{match.time}</td>
+                  <td className="px-4 py-3">
+                    <button
+                      type="button"
+                      onClick={() => setPlanFilter(String(match.planNr))}
+                      className="rounded-full border border-sky-900/15 bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-900"
+                    >
+                      Plan {match.planNr}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link
+                      to={formatGroupPath(year, match.group)}
+                      className="rounded-full border border-sky-900/20 bg-white px-3 py-1 text-sm font-bold text-sky-900 hover:bg-amber-100"
+                    >
+                      {match.group}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-sky-900/80">{match.type}</td>
+                  <td className="px-4 py-3">
+                    <Link to={formatTeamPath(year, match.team1)} className="text-sm font-semibold text-sky-900 hover:text-sky-700">
+                      {match.team1}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link to={formatTeamPath(year, match.team2)} className="text-sm font-semibold text-sky-900 hover:text-sky-700">
+                      {match.team2}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-sm font-bold text-sky-900">{match.result || "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </PageShell>
+  );
+}
+
+function FilterRow({ title, items, selected, onChange, prefix = "" }) {
+  return (
+    <div>
+      <h3 className="mb-2 text-xs font-extrabold uppercase tracking-[0.18em] text-sky-900/70">{title}</h3>
+      <div className="flex flex-wrap gap-2">
+        {items.map((item) => {
+          const active = item === selected;
+
+          return (
+            <button
+              key={item}
+              type="button"
+              onClick={() => onChange(active ? "" : item)}
+              className={`rounded-full border px-3 py-1 text-sm font-semibold transition ${
+                active
+                  ? "border-sky-900 bg-sky-900 text-white"
+                  : "border-sky-900/15 bg-white text-sky-900 hover:bg-amber-100"
+              }`}
+            >
+              {prefix}{item}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  const defaultYear = AVAILABLE_YEARS[0] || DEFAULT_YEAR;
+
+  return (
+    <div className="min-h-screen bg-kkif">
+      <Header />
+      <Routes>
+        <Route path="/" element={<StartPage />} />
+        <Route path="/regler" element={<RulesPage />} />
+        <Route path="/spelschema" element={<Navigate to={`/spelschema/${defaultYear}`} replace />} />
+        <Route path="/spelschema/:year" element={<SchedulePage />} />
+        <Route path="/spelschema/:year/grupp/:groupId" element={<SchedulePage />} />
+        <Route path="/spelschema/:year/lag/:teamId" element={<SchedulePage />} />
+      </Routes>
+    </div>
+  );
+}
