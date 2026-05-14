@@ -1,9 +1,26 @@
-import { Link, Navigate, Route, Routes, useParams } from 'react-router-dom';
+import {
+  Link,
+  NavLink,
+  Navigate,
+  Route,
+  Routes,
+  useParams,
+} from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { AVAILABLE_YEARS, SCHEDULES } from './data/schedules';
 
 const DEFAULT_YEAR = 2026;
 const LOGO_SRC = `${import.meta.env.BASE_URL}karrakif-logo.png`;
+const TEAM_PLACEHOLDER_PATTERN = /^(vinnare|finalist)\b/i;
+const TEAM_FILTER_PRIORITY = ['herrar', 'damer', 'herrjunior yngre'];
+
+function getTeamFilterPriority(teamName) {
+  return TEAM_FILTER_PRIORITY.indexOf(teamName.trim().toLowerCase());
+}
+
+function isNamedTeam(teamName) {
+  return Boolean(teamName) && !TEAM_PLACEHOLDER_PATTERN.test(teamName);
+}
 
 function formatTeamPath(year, team) {
   return `/spelschema/${year}/lag/${encodeURIComponent(team)}`;
@@ -38,12 +55,19 @@ function Header() {
 
 function NavItem({ to, children }) {
   return (
-    <Link
+    <NavLink
       to={to}
-      className="rounded-full px-4 py-2 text-sky-900 transition hover:bg-amber-200/70 hover:text-sky-950"
+      end={to === '/'}
+      className={({ isActive }) =>
+        `rounded-full px-4 py-2 transition ${
+          isActive
+            ? 'bg-sky-900 text-white'
+            : 'text-sky-900 hover:bg-amber-200/70 hover:text-sky-950'
+        }`
+      }
     >
       {children}
-    </Link>
+    </NavLink>
   );
 }
 
@@ -73,9 +97,7 @@ function StartPage() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <InfoCard title="Datum">Lördag 2026-06-06</InfoCard>
           <InfoCard title="Plats">Klarebergsvallen</InfoCard>
-          <InfoCard title="Starttider">
-            09.30 uppvisningsmatch, 10.00 turneringsstart
-          </InfoCard>
+          <InfoCard title="Starttid">09.30</InfoCard>
         </div>
 
         <div className="mt-6 rounded-2xl border border-sky-900/10 bg-white/90 p-5">
@@ -132,23 +154,34 @@ function RulesPage() {
 
         <ol className="mt-6 space-y-3 text-sky-950/85">
           <li>
-            1. Matchtid enligt spelschemat. Alla matcher startar på utsatt tid.
+            Matchtid 10 min + straffar. Alla matcher startar på utsatt tid.
           </li>
           <li>
-            2. Gruppspel avgörs enligt poäng: vinst 3, oavgjort 1, förlust 0.
+            Gruppspel avgörs enligt poäng: vinst 3, oavgjort 1, förlust 0.
           </li>
           <li>
-            3. Vid lika poäng gäller målskillnad, därefter flest gjorda mål,
-            sedan lottning.
+            Vid lika poäng gäller målskillnad, därefter flest gjorda mål, sedan
+            lottning.
           </li>
           <li>
-            4. Slutspelsmatcher avgörs direkt. Vid oavgjort tillämpas straffar.
+            Efter spelet får man lika många straffar som man ligger under med.
+            Därefter får man lika många straffar som det skiljer i ålder. Herr-
+            och damlag räknas som 18 år.
           </li>
           <li>
-            5. Schysst spel, respekt för domare och motståndare gäller hela
-            dagen.
+            Schysst spel, respekt för domare och motståndare gäller hela dagen.
           </li>
         </ol>
+
+        <div className="mt-6 rounded-2xl border border-sky-900/10 bg-sky-50/60 p-4 text-sky-950/85">
+          <h3 className="text-xs font-extrabold uppercase tracking-[0.18em] text-sky-900/70">
+            Exempel
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed">
+            Exempel: P12 möter P18. P12 vinner med 3-1. Då får P18 2 straffar
+            för att de låg under, och 6 straffar för åldersskillnad.
+          </p>
+        </div>
       </section>
     </PageShell>
   );
@@ -174,7 +207,8 @@ function SchedulePage() {
 
   useEffect(() => {
     if (params.teamId) {
-      setTeamFilter(decodeURIComponent(params.teamId));
+      const routeTeam = decodeURIComponent(params.teamId);
+      setTeamFilter(isNamedTeam(routeTeam) ? routeTeam : '');
       return;
     }
 
@@ -198,8 +232,17 @@ function SchedulePage() {
   const teams = useMemo(() => {
     if (!matches) return [];
     return [...new Set(matches.flatMap((match) => [match.team1, match.team2]))]
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b, 'sv'));
+      .filter(isNamedTeam)
+      .sort((a, b) => {
+        const aPriority = getTeamFilterPriority(a);
+        const bPriority = getTeamFilterPriority(b);
+
+        if (aPriority !== -1 && bPriority !== -1) return aPriority - bPriority;
+        if (aPriority !== -1) return -1;
+        if (bPriority !== -1) return 1;
+
+        return a.localeCompare(b, 'sv');
+      });
   }, [matches]);
 
   const filteredMatches = useMemo(() => {
@@ -285,7 +328,6 @@ function SchedulePage() {
                 <th className="px-4 py-3">Typ</th>
                 <th className="px-4 py-3">Lag 1</th>
                 <th className="px-4 py-3">Lag 2</th>
-                <th className="px-4 py-3">Resultat</th>
               </tr>
             </thead>
             <tbody>
@@ -321,23 +363,28 @@ function SchedulePage() {
                     {match.type}
                   </td>
                   <td className="px-4 py-3">
-                    <Link
-                      to={formatTeamPath(year, match.team1)}
-                      className="text-sm font-semibold text-sky-900 hover:text-sky-700"
-                    >
-                      {match.team1}
-                    </Link>
+                    {isNamedTeam(match.team1) ? (
+                      <Link
+                        to={formatTeamPath(year, match.team1)}
+                        className="text-sm font-semibold text-sky-900 hover:text-sky-700"
+                      >
+                        {match.team1}
+                      </Link>
+                    ) : (
+                      <span className="text-sm text-sky-900/45">-</span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
-                    <Link
-                      to={formatTeamPath(year, match.team2)}
-                      className="text-sm font-semibold text-sky-900 hover:text-sky-700"
-                    >
-                      {match.team2}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 text-sm font-bold text-sky-900">
-                    {match.result || '-'}
+                    {isNamedTeam(match.team2) ? (
+                      <Link
+                        to={formatTeamPath(year, match.team2)}
+                        className="text-sm font-semibold text-sky-900 hover:text-sky-700"
+                      >
+                        {match.team2}
+                      </Link>
+                    ) : (
+                      <span className="text-sm text-sky-900/45">-</span>
+                    )}
                   </td>
                 </tr>
               ))}
