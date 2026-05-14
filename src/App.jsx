@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { AVAILABLE_YEARS, SCHEDULES } from './data/schedules';
 
 const DEFAULT_YEAR = 2026;
+const LOGO_SRC = `${import.meta.env.BASE_URL}karrakif-logo.png`;
 
 function formatTeamPath(year, team) {
   return `/spelschema/${year}/lag/${encodeURIComponent(team)}`;
@@ -17,7 +18,7 @@ function Header() {
     <header className="border-b border-white/70 bg-white/70 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-3">
-          <img src="/karrakif-logo.png" alt="KKIF" className="h-12 w-auto" />
+          <img src={LOGO_SRC} alt="KKIF" className="h-12 w-auto" />
           <div>
             <h1 className="font-display text-2xl font-black tracking-tight text-sky-950">
               KKIF-Dagen
