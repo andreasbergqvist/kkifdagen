@@ -366,7 +366,7 @@ function SchedulePage() {
                       {isNamedTeam(match.team1) ? (
                         <Link
                           to={formatTeamPath(year, match.team1)}
-                          aria-label={`Lag 1: ${match.team1}`}
+                          aria-label={`Hemmalag: ${match.team1}`}
                           className="block font-semibold text-sky-900 hover:text-sky-700"
                         >
                           {match.team1}
@@ -377,7 +377,7 @@ function SchedulePage() {
                       {isNamedTeam(match.team2) ? (
                         <Link
                           to={formatTeamPath(year, match.team2)}
-                          aria-label={`Lag 2: ${match.team2}`}
+                          aria-label={`Bortalag: ${match.team2}`}
                           className="block font-semibold text-sky-900 hover:text-sky-700"
                         >
                           {match.team2}
