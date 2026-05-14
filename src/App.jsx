@@ -366,7 +366,9 @@ function SchedulePage() {
                           <span className="sm:hidden">
                             {formatMobileTeamName(match.team1)}
                           </span>
-                          <span className="hidden sm:inline">{match.team1}</span>{' '}
+                          <span className="hidden sm:inline">
+                            {match.team1}
+                          </span>{' '}
                           <span className="font-normal">vs</span>
                         </Link>
                       ) : (
@@ -381,7 +383,9 @@ function SchedulePage() {
                           <span className="sm:hidden">
                             {formatMobileTeamName(match.team2)}
                           </span>
-                          <span className="hidden sm:inline">{match.team2}</span>
+                          <span className="hidden sm:inline">
+                            {match.team2}
+                          </span>
                         </Link>
                       ) : (
                         <span className="block text-sky-900/45">-</span>
