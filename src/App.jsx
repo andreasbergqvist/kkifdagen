@@ -13,6 +13,9 @@ const DEFAULT_YEAR = 2026;
 const LOGO_SRC = `${import.meta.env.BASE_URL}karrakif-logo.png`;
 const TEAM_PLACEHOLDER_PATTERN = /^(vinnare|finalist)\b/i;
 const TEAM_FILTER_PRIORITY = ['herrar', 'damer', 'herrjunior yngre'];
+const MOBILE_TEAM_NAME_MAP = {
+  'Herrjunior Yngre': 'Herrjr Y',
+};
 
 function getTeamFilterPriority(teamName) {
   return TEAM_FILTER_PRIORITY.indexOf(teamName.trim().toLowerCase());
@@ -20,6 +23,10 @@ function getTeamFilterPriority(teamName) {
 
 function isNamedTeam(teamName) {
   return Boolean(teamName) && !TEAM_PLACEHOLDER_PATTERN.test(teamName);
+}
+
+function formatMobileTeamName(teamName) {
+  return MOBILE_TEAM_NAME_MAP[teamName] || teamName;
 }
 
 function formatTeamPath(year, team) {
@@ -41,8 +48,8 @@ function Header() {
         <Link to="/" className="flex items-center gap-3">
           <img src={LOGO_SRC} alt="KKIF" className="h-10 w-auto sm:h-12" />
           <div>
-            <h1 className="font-display text-xl font-black tracking-tight text-sky-950 sm:text-2xl">
-              KKIF<span className="hidden sm:inline">-Dagen</span>
+            <h1 className="font-display text-xl font-black leading-5 text-sky-950 sm:text-2xl">
+              KKIF-dagen
             </h1>
           </div>
         </Link>
@@ -356,7 +363,11 @@ function SchedulePage() {
                           aria-label={`Lag 1: ${match.team1}`}
                           className="block font-semibold text-sky-900 hover:text-sky-700 truncate"
                         >
-                          {match.team1} <span className="font-normal">vs</span>
+                          <span className="sm:hidden">
+                            {formatMobileTeamName(match.team1)}
+                          </span>
+                          <span className="hidden sm:inline">{match.team1}</span>{' '}
+                          <span className="font-normal">vs</span>
                         </Link>
                       ) : (
                         <span className="block text-sky-900/45">-</span>
@@ -367,7 +378,10 @@ function SchedulePage() {
                           aria-label={`Lag 2: ${match.team2}`}
                           className="block font-semibold text-sky-900 hover:text-sky-700"
                         >
-                          {match.team2}
+                          <span className="sm:hidden">
+                            {formatMobileTeamName(match.team2)}
+                          </span>
+                          <span className="hidden sm:inline">{match.team2}</span>
                         </Link>
                       ) : (
                         <span className="block text-sky-900/45">-</span>
