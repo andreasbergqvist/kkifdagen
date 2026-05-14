@@ -8,8 +8,8 @@ React + Tailwind CSS v4 web app for KKIF-dagen.
 - Rules page
 - Spelschema page for 2026
 - Route support for specific group and team views
-	- `/spelschema/2026/grupp/A`
-	- `/spelschema/2026/lag/P14-1`
+  - `/spelschema/2026/grupp/A`
+  - `/spelschema/2026/lag/P14-1`
 - Data model prepared for adding 2027 later
 
 ## Tech Stack
