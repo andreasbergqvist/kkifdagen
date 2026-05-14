@@ -318,7 +318,7 @@ function SchedulePage() {
         </div>
 
         <div className="overflow-auto rounded-2xl border border-sky-900/10">
-          <table className="w-full text-left text-xs sm:text-sm">
+          <table className="min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-sky-900 text-xs uppercase tracking-[0.08em] text-sky-50">
               <tr>
                 <th className="px-2 py-3 sm:px-4">#</th>
@@ -366,22 +366,28 @@ function SchedulePage() {
                       {isNamedTeam(match.team1) ? (
                         <Link
                           to={formatTeamPath(year, match.team1)}
+                          aria-label={`Lag 1: ${match.team1}`}
                           className="block font-semibold text-sky-900 hover:text-sky-700"
                         >
                           {match.team1}
                         </Link>
                       ) : (
-                        <span className="block text-sky-900/45">-</span>
+                        <span aria-label="Lag 1: saknas" className="block text-sky-900/45">
+                          -
+                        </span>
                       )}
                       {isNamedTeam(match.team2) ? (
                         <Link
                           to={formatTeamPath(year, match.team2)}
+                          aria-label={`Lag 2: ${match.team2}`}
                           className="block font-semibold text-sky-900 hover:text-sky-700"
                         >
                           {match.team2}
                         </Link>
                       ) : (
-                        <span className="block text-sky-900/45">-</span>
+                        <span aria-label="Lag 2: saknas" className="block text-sky-900/45">
+                          -
+                        </span>
                       )}
                     </div>
                   </td>
