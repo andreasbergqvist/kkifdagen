@@ -29,6 +29,19 @@ function formatMobileTeamName(teamName) {
   return MOBILE_TEAM_NAME_MAP[teamName] || teamName;
 }
 
+function sortTeamNames(teamNames) {
+  return [...teamNames].sort((a, b) => {
+    const aPriority = getTeamFilterPriority(a);
+    const bPriority = getTeamFilterPriority(b);
+
+    if (aPriority !== -1 && bPriority !== -1) return aPriority - bPriority;
+    if (aPriority !== -1) return -1;
+    if (bPriority !== -1) return 1;
+
+    return a.localeCompare(b, 'sv');
+  });
+}
+
 function formatTeamPath(year, team) {
   return `/spelschema/${year}/lag/${encodeURIComponent(team)}`;
 }
@@ -54,7 +67,7 @@ function Header() {
           </div>
         </Link>
 
-        <nav className="flex items-center gap-1 rounded-full border border-sky-950/10 bg-white p-1 text-xs font-semibold sm:text-sm">
+        <nav className="site-navigation flex items-center gap-1 rounded-full border border-sky-950/10 bg-white p-1 text-xs font-semibold sm:text-sm">
           <NavItem to="/">Start</NavItem>
           <NavItem to="/spelschema">Spelschema</NavItem>
           <NavItem to="/regler">Regler</NavItem>
@@ -251,19 +264,26 @@ function SchedulePage() {
 
   const teams = useMemo(() => {
     if (!matches) return [];
-    return [...new Set(matches.flatMap((match) => [match.team1, match.team2]))]
-      .filter(isNamedTeam)
-      .sort((a, b) => {
-        const aPriority = getTeamFilterPriority(a);
-        const bPriority = getTeamFilterPriority(b);
-
-        if (aPriority !== -1 && bPriority !== -1) return aPriority - bPriority;
-        if (aPriority !== -1) return -1;
-        if (bPriority !== -1) return 1;
-
-        return a.localeCompare(b, 'sv');
-      });
+    return sortTeamNames(
+      [
+        ...new Set(matches.flatMap((match) => [match.team1, match.team2])),
+      ].filter(isNamedTeam),
+    );
   }, [matches]);
+
+  const groupTeams = useMemo(() => {
+    if (!matches || !groupFilter) return [];
+
+    return sortTeamNames(
+      [
+        ...new Set(
+          matches
+            .filter((match) => match.group === groupFilter)
+            .flatMap((match) => [match.team1, match.team2]),
+        ),
+      ].filter(isNamedTeam),
+    );
+  }, [groupFilter, matches]);
 
   const filteredMatches = useMemo(() => {
     if (!matches) return [];
@@ -276,6 +296,12 @@ function SchedulePage() {
       return groupOk && teamOk && planOk;
     });
   }, [groupFilter, matches, planFilter, teamFilter]);
+
+  const activeFilters = [
+    groupFilter ? `Grupp ${groupFilter}` : null,
+    planFilter ? `Plan ${planFilter}` : null,
+    teamFilter ? `Lag ${teamFilter}` : null,
+  ].filter(Boolean);
 
   if (!matches) {
     return (
@@ -292,19 +318,24 @@ function SchedulePage() {
 
   return (
     <PageShell>
-      <section className="space-y-4 rounded-3xl border border-sky-950/10 bg-white p-4 shadow-[0_20px_45px_rgba(11,63,119,0.08)] sm:p-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
+      <section className="schedule-page space-y-4 rounded-3xl border border-sky-950/10 bg-white p-4 shadow-[0_20px_45px_rgba(11,63,119,0.08)] sm:p-6">
+        <div className="schedule-header flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="font-display text-3xl font-black text-sky-950">
+            <h2 className="schedule-title font-display text-3xl font-black text-sky-950">
               Spelschema {year}
             </h2>
+            <p className="schedule-print-meta hidden text-sm text-sky-950">
+              {activeFilters.length > 0
+                ? `Filter: ${activeFilters.join(' • ')}`
+                : 'Alla matcher'}
+            </p>
           </div>
-          <div className="rounded-full border border-sky-900/15 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-900">
+          <div className="schedule-summary rounded-full border border-sky-900/15 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-900">
             {filteredMatches.length} / {matches.length} matcher
           </div>
         </div>
 
-        <div className="space-y-3 rounded-2xl border border-sky-900/10 bg-sky-50/60 p-3 sm:p-4">
+        <div className="schedule-filters space-y-3 rounded-2xl border border-sky-900/10 bg-sky-50/60 p-3 sm:p-4">
           <FilterRow
             title="Grupp"
             items={groups}
@@ -335,8 +366,34 @@ function SchedulePage() {
           </Link>
         </div>
 
-        <div className="overflow-auto rounded-2xl border border-sky-900/10">
-          <table className="min-w-full text-left text-xs sm:text-sm">
+        {groupFilter && groupTeams.length > 0 ? (
+          <section className="rounded-2xl border border-sky-900/10 bg-white p-4 shadow-[0_10px_30px_rgba(11,63,119,0.06)]">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h3 className="text-xs font-extrabold uppercase tracking-[0.18em] text-sky-900/70">
+                  Lag i grupp {groupFilter}
+                </h3>
+                <p className="mt-1 text-sm text-sky-950/70">
+                  {groupTeams.length} lag i vald grupp
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {groupTeams.map((team) => (
+                <Link
+                  key={team}
+                  to={formatTeamPath(year, team)}
+                  className="rounded-full border border-sky-900/15 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-900 transition hover:border-sky-900/30 hover:bg-amber-100"
+                >
+                  {team}
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <div className="schedule-table-wrap overflow-auto rounded-2xl border border-sky-900/10">
+          <table className="schedule-table min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-sky-900 text-xs uppercase tracking-[0.08em] text-sky-50">
               <tr>
                 <th className="px-2 py-3 sm:px-4">Tid</th>

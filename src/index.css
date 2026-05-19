@@ -30,3 +30,104 @@
       linear-gradient(180deg, #f9fcff 0%, #f6f9ff 46%, #fef6e8 100%);
   }
 }
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: auto;
+    background: #fff;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111827;
+    font-size: 10pt;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .bg-kkif {
+    background: #fff !important;
+  }
+
+  .site-navigation,
+  .schedule-filters {
+    display: none !important;
+  }
+
+  .schedule-page {
+    gap: 0.75rem;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .schedule-header {
+    align-items: start;
+    gap: 0.5rem;
+  }
+
+  .schedule-title {
+    font-size: 20pt;
+    line-height: 1.15;
+  }
+
+  .schedule-print-meta {
+    display: block !important;
+    margin-top: 0.35rem;
+  }
+
+  .schedule-summary {
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #0f172a;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .schedule-table-wrap {
+    overflow: visible;
+    border: 1px solid #cbd5e1;
+    border-radius: 0;
+  }
+
+  .schedule-table {
+    width: 100%;
+    font-size: 9pt;
+    border-collapse: collapse;
+  }
+
+  .schedule-table thead {
+    display: table-header-group;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: 0.45rem 0.55rem !important;
+    border-bottom: 1px solid #dbe3ee;
+    color: #111827;
+    vertical-align: top;
+  }
+
+  .schedule-table th {
+    background: #0f3b72 !important;
+    color: #fff !important;
+    font-size: 8pt;
+  }
+
+  .schedule-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .schedule-table a {
+    color: inherit !important;
+    text-decoration: none;
+  }
+}
